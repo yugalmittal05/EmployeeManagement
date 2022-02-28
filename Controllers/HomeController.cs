@@ -92,6 +92,7 @@ namespace EmployeeManagement.Controllers
     {
       if (ModelState.IsValid)
       {
+       
         Employee updateEmployee = _employeeRepository.UpdateEmployee(employee);
       return RedirectToAction("details", new { id = updateEmployee.Id });
     }
