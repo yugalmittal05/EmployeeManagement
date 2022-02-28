@@ -1,0 +1,17 @@
+﻿@model ActionResult
+<body>
+  @if (ViewBag.checkStatus == true)
+  {
+    
+    <script type="text/javascript">
+      alert("Employee deleted Successfully");
+      window.location.replace("https://localhost:44392/Home/index")
+    </script>
+  }
+  else
+  {
+    <script type="text/javascript">
+      alert("Internal error");
+    </script>
+  }
+</body>
