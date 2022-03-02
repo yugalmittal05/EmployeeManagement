@@ -2,7 +2,7 @@
 
 @{ViewBag.PageTitle = "Update Employee";
 }
-<form asp-controller="home" asp-action="Update" method="post" class="mt-3">
+<form  enctype="multipart/form-data" asp-controller="home" asp-action="Update" method="post" class="mt-3">
 
   <div class="form-group row">
     <label asp-for="Id" class="col-sm-2 col-form-label"></label>
@@ -11,9 +11,9 @@
     </div>
   </div>
   <div class="form-group row">
-    <label asp-for="Image" class="col-sm-2 col-form-label"></label>
+    <label asp-for="PhotoPath" class="col-sm-2 col-form-label"></label>
     <div class="col-sm-10">
-      <img asp-for="Image"  src="@Model.Image" disabled>
+      <img class="card-img-top" src="~/images/@Model.PhotoPath" width="200" height="300" disabled />
     </div>
   </div>
   <div class="form-group row">

@@ -7,6 +7,7 @@ namespace EmployeeManagement.Model
 {
   public enum Dept
   {
+    
     HR,
     IT,
     Basic
