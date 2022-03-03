@@ -40,9 +40,14 @@ namespace EmployeeManagement.Controllers
     [HttpGet("details/{id?}")]
     public ViewResult Details(int id)
     {
+      Employee employee = _employeeRepository.GetEmployee(id);
+      if(employee == null){
+        Response.StatusCode = 404;
+        return View("404Error",id);
+      }
       HomeDetailsViewModel homeDetailsViewModels = new HomeDetailsViewModel()
       {
-        Employee = _employeeRepository.GetEmployee(id),
+        Employee = employee,
         PageTitle = "Employee Details"
       };
 
