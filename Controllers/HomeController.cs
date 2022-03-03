@@ -3,8 +3,8 @@ using EmployeeManagement.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -15,16 +15,17 @@ namespace EmployeeManagement.Controllers
   public class HomeController : Controller
   {
     private readonly IEmployeeRepository _employeeRepository;
-    private readonly IWebHostEnvironment webHostEnvironment;
-    
+    private readonly IWebHostEnvironment Environment;
+
 
     public HomeController(IEmployeeRepository employeeRepository,
       IWebHostEnvironment webHostEnvironment)
     {
       _employeeRepository = employeeRepository;
+      this.Environment = webHostEnvironment;
     }
 
-   
+
     [HttpGet("/")]
     [HttpGet("index")]
     //Get all Employees data
@@ -35,8 +36,8 @@ namespace EmployeeManagement.Controllers
       return View(model);
     }
 
-    [HttpGet("details/{id?}")]
     // Get employee Data By id
+    [HttpGet("details/{id?}")]
     public ViewResult Details(int id)
     {
       HomeDetailsViewModel homeDetailsViewModels = new HomeDetailsViewModel()
@@ -44,7 +45,7 @@ namespace EmployeeManagement.Controllers
         Employee = _employeeRepository.GetEmployee(id),
         PageTitle = "Employee Details"
       };
-      
+
       if (homeDetailsViewModels != null)
       {
         return View(homeDetailsViewModels);
@@ -55,34 +56,34 @@ namespace EmployeeManagement.Controllers
       }
     }
 
+    //delete Data by Id
     [Route("delete/{id?}")]
-    public ActionResult Delete(int id)
-    {
-     var checkStatus = _employeeRepository.DeleteEmployee(id);
+    public IActionResult Delete(int id)
+    { 
+      Employee employee = _employeeRepository.DeleteEmployee(id);
+      //_employeeRepository.DeleteEmployee(id);
+      string photoPath = Environment.WebRootPath + "/images/" + employee.PhotoPath;
+      System.IO.File.Delete(photoPath);
       ViewBag.PageTitle = "Employee Delete";
-        return View();
-      
+      return View();
+
     }
+
+    // Create view
     [HttpGet("Create")]
     public ViewResult Create()
     {
       return View();
     }
 
+
+    //create data
     [HttpPost("Create")]
     public IActionResult Create(EmployeeCreateViewModel model)
     {
       if (ModelState.IsValid)
       {
-        string uniqueFileName = null;
-        if(model.Photo != null)
-        {
-         // var uploadFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location.Substring(0, Assembly.GetEntryAssembly().Location.IndexOf("Images")));
-          string uploadsFolder = Path.Combine("./wwwroot/","Images");
-          uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
-          string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-          model.Photo.CopyTo(new FileStream(filePath, FileMode.Create));
-        }
+        string uniqueFileName = ProcesFileUpload(model);
         Employee newEmployee = new Employee
         {
           Name = model.Name,
@@ -90,41 +91,73 @@ namespace EmployeeManagement.Controllers
           Department = model.Department,
           PhotoPath = uniqueFileName
         };
-          _employeeRepository.AddEmployee(newEmployee);
+        _employeeRepository.AddEmployee(newEmployee);
         return RedirectToAction("details", new { id = newEmployee.Id });
       }
       return View();
     }
 
-   
-
+    //Get update View 
     [HttpGet("update/{id?}")]
     public ViewResult Update(int id)
     {
-
-      var e = _employeeRepository.GetEmployee(id);
-      return View(e);
+      Employee employee = _employeeRepository.GetEmployee(id);
+      UpdateViewModel updateViewModel = new UpdateViewModel
+      {
+        Id = employee.Id,
+        Name = employee.Name,
+        Email = employee.Email,
+        Department = employee.Department,
+        OldPhoto = employee.PhotoPath
+      };
+      return View(updateViewModel);
     }
 
 
-
+    //Upadte Data By Id
     [HttpPost("update/{id?}")]
-    public IActionResult Update(Employee employee)
+    public IActionResult Update(UpdateViewModel model)
     {
       if (ModelState.IsValid)
       {
-        Employee updateEmployee = new Employee
+        Employee employee = _employeeRepository.GetEmployee(model.Id);
+        employee.Name = model.Name;
+        employee.Email = model.Email;
+        employee.Department = model.Department;
+        if(model.Photo != null)
         {
-          Name = employee.Name,
-          Email = employee.Email,
-          Department = employee.Department,
-          PhotoPath = employee.PhotoPath
-        };
-         _employeeRepository.UpdateEmployee(employee);
-      return RedirectToAction("details", new { id = updateEmployee.Id });
-    }
-       return View(employee);
+          if(model.OldPhoto != null)
+          {
+            string filePath = Path.Combine("./wwwroot/",
+                     "images", model.OldPhoto);
+            System.IO.File.Delete(filePath);
+          }
+          employee.PhotoPath = ProcesFileUpload(model);
+        }
+        _employeeRepository.UpdateEmployee(employee);
+        return RedirectToAction("details", new { id = employee.Id });
+      }
+      return View();
     }
 
+
+    //Get File Name And Upload in Folder
+    private string ProcesFileUpload(EmployeeCreateViewModel model)
+    {
+      string uniqueFileName = null;
+      if (model.Photo != null)
+      {
+        // var uploadFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location.Substring(0, Assembly.GetEntryAssembly().Location.IndexOf("Images")));
+        string uploadsFolder = Path.Combine(Environment.WebRootPath, "Images");
+        //string uploadsFolder = Path.Combine("./wwwroot/","Images");
+        uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
+        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+        using (var filestream = new FileStream(filePath, FileMode.Create))
+        {
+          model.Photo.CopyTo(filestream);
+        }
+      }
+      return uniqueFileName;
+    }
   }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,15 +24,10 @@ namespace EmployeeManagement.Model
 
     public Employee DeleteEmployee(int Id)
     {
-      Employee employee = context.Employees.Find(Id);
+      Employee employee = context.Employees.Where(e => e.Id == Id).FirstOrDefault();
       if (employee != null)
       {
         context.Employees.Remove(employee);
-        if(employee.PhotoPath != null)
-        {
-          System.IO.File.Delete("./wwwroot/images/" + employee.PhotoPath);
-        }
-        
         context.SaveChanges();
       }
       return employee;
@@ -44,7 +40,8 @@ namespace EmployeeManagement.Model
 
     public Employee GetEmployee(int Id)
     {
-      /**/return context.Employees.Find(Id);
+      var user = context.Employees.Find(Id);
+      return user;
     }
 
     public Employee UpdateEmployee(Employee employeeChanges)

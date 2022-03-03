@@ -1,9 +1,8 @@
 ﻿@model ViewModels.HomeDetailsViewModel
 @{
-  var photoPath = Model.Employee.PhotoPath;
+ 
   if (@Model.Employee != null)
   {
-
     <div class="row justify-content-center m-3">
       <div class="col-sm-8">
         <div class="card">
@@ -12,7 +11,7 @@
           </div>
 
           <div class="card-body text-center">
-            <img class="card-img-top" src="~/images/@photoPath" width="200" height="300" />
+            <img class="card-img-top" src="~/images/@Model.Employee.PhotoPath"   />
 
             <h4>Employee ID : @Model.Employee.Id</h4>
             <h4>Email : @Model.Employee.Email</h4>
