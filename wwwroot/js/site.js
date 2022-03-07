@@ -7,4 +7,10 @@
         var id = prompt("enter id");
         //location.replace("https://localhost:44392/Home/index");
        
-    }
+}
+function getResponce(id) {
+    var text = "Are You Sure to Delete it?";
+    if (confirm(text) == true) {
+        window.location.replace("https://localhost:44392/Home/delete/" + id)
+    } 
+}

@@ -8,8 +8,9 @@ namespace EmployeeManagement.Model
   public enum Dept
   {
     
-    HR,
-    IT,
-    Basic
+    HR = 1,
+    IT = 2,
+    Basic = 3,
+    Technical_Support = 4
   }
 }

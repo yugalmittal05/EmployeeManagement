@@ -8,10 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmployeeManagement.Controllers
 {
-  [Route("/[controller]/")]
+  [Authorize]
+  [Route("[controller]")]
   public class HomeController : Controller
   {
     private readonly IEmployeeRepository _employeeRepository;
@@ -25,7 +27,7 @@ namespace EmployeeManagement.Controllers
       this.Environment = webHostEnvironment;
     }
 
-
+    [AllowAnonymous]
     [HttpGet("/")]
     [HttpGet("index")]
     //Get all Employees data
@@ -37,39 +39,49 @@ namespace EmployeeManagement.Controllers
     }
 
     // Get employee Data By id
-    [HttpGet("details/{id?}")]
+    [AllowAnonymous]
+    [HttpGet("Details/{id?}")]
     public ViewResult Details(int id)
     {
+     // throw new Exception("New Error By Details");
       Employee employee = _employeeRepository.GetEmployee(id);
-      if(employee == null){
-        Response.StatusCode = 404;
-        return View("404Error",id);
-      }
-      HomeDetailsViewModel homeDetailsViewModels = new HomeDetailsViewModel()
+      if (employee == null)
       {
-        Employee = employee,
-        PageTitle = "Employee Details"
-      };
-
-      if (homeDetailsViewModels != null)
-      {
-        return View(homeDetailsViewModels);
+        //Response.StatusCode = 404;
+        return View("404Error");
       }
       else
       {
-        return View();
+        HomeDetailsViewModel homeDetailsViewModels = new HomeDetailsViewModel()
+        {
+          Employee = _employeeRepository.GetEmployee(id),
+          PageTitle = "Employee Details"
+        };
+
+        if (homeDetailsViewModels != null)
+        {
+          return View(homeDetailsViewModels);
+        }
+        else
+        {
+          return View();
+        }
       }
     }
 
     //delete Data by Id
     [Route("delete/{id?}")]
     public IActionResult Delete(int id)
-    { 
+    {
       Employee employee = _employeeRepository.DeleteEmployee(id);
       //_employeeRepository.DeleteEmployee(id);
-      string photoPath = Environment.WebRootPath + "/images/" + employee.PhotoPath;
-      System.IO.File.Delete(photoPath);
       ViewBag.PageTitle = "Employee Delete";
+      
+      if (employee.PhotoPath != null)
+      {
+        string photoPath = Environment.WebRootPath + "/images/" + employee.PhotoPath;
+        System.IO.File.Delete(photoPath);
+      }
       return View();
 
     }
@@ -129,12 +141,11 @@ namespace EmployeeManagement.Controllers
         employee.Name = model.Name;
         employee.Email = model.Email;
         employee.Department = model.Department;
-        if(model.Photo != null)
+        if (model.Photo != null)
         {
-          if(model.OldPhoto != null)
+          if (model.OldPhoto != null)
           {
-            string filePath = Path.Combine("./wwwroot/",
-                     "images", model.OldPhoto);
+            string filePath = Path.Combine("./wwwroot/", "images", model.OldPhoto);
             System.IO.File.Delete(filePath);
           }
           employee.PhotoPath = ProcesFileUpload(model);

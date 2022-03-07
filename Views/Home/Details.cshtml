@@ -1,39 +1,40 @@
 ﻿@model ViewModels.HomeDetailsViewModel
-@{
- 
-  if (@Model.Employee != null)
-  {
-    <div class="row justify-content-center m-3">
-      <div class="col-sm-8">
-        <div class="card">
-          <div class="card-header">
-            <h1>@Model.Employee.Name</h1>
-          </div>
+  
+  @{
+    var photoPath = "~/images/" + (@Model.Employee.PhotoPath ?? "noimage.png");
 
-          <div class="card-body text-center">
-            <img class="card-img-top" src="~/images/@Model.Employee.PhotoPath"   />
+    if (@Model.Employee != null)
+    {
+      <div class="row justify-content-center m-3">
+        <div class="col-sm-8">
+          <div class="card">
+            <div class="card-header">
+              <h1>@Model.Employee.Name</h1>
+            </div>
 
-            <h4>Employee ID : @Model.Employee.Id</h4>
-            <h4>Email : @Model.Employee.Email</h4>
-            <h4>Department : @Model.Employee.Department</h4>
+            <div class="card-body text-center">
+              <img class="card-img-top" src="@photoPath" asp-append-version="true"/>
 
-          </div>
-          <div class="card-footer text-center">
-            <a asp-controller="home" asp-action="index"  class="btn btn-primary">Back</a>
-            <a asp-controller="home" asp-action="Update" asp-route-id="@Model.Employee.Id" class="btn btn-primary">Edit</a>
-            <a asp-controller="home" asp-action="delete" asp-route-id="@Model.Employee.Id" class="btn btn-danger">Delete</a>
+              <h4>Employee ID : @Model.Employee.Id</h4>
+              <h4>Email : @Model.Employee.Email</h4>
+              <h4>Department : @Model.Employee.Department</h4>
+
+            </div>
+            <div class="card-footer text-center">
+              <a asp-controller="home" asp-action="index" class="btn btn-primary">Home</a>
+              <a asp-controller="home" asp-action="Update" asp-route-id="@Model.Employee.Id" class="btn btn-primary">Edit</a>
+              <button onclick="getResponce(@Model.Employee.Id)" class="btn btn-danger">Delete</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     }
 
     else
     {
-    <script>
-      alert("No User Found")</script>
+      <script>
+        alert("No User Found")</script>
     }
-    }
+  }
 
 
-  
