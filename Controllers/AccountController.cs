@@ -1,4 +1,5 @@
-﻿using EmployeeManagement.ViewModels;
+﻿using EmployeeManagement.Model;
+using EmployeeManagement.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -13,14 +14,17 @@ namespace EmployeeManagement.Controllers
   [AllowAnonymous]
   public class AccountController : Controller
   {
-    private readonly UserManager<IdentityUser> userManager;
-    private readonly SignInManager<IdentityUser> signInManager;
+    private readonly UserManager<ExtendIdentity> userManager;
+    private readonly SignInManager<ExtendIdentity> signInManager;
+    private readonly RoleManager<IdentityRole> roleManager;
 
-    public AccountController(UserManager<IdentityUser> userManager,
-                               SignInManager<IdentityUser> signInManager)
+    public AccountController(UserManager<ExtendIdentity> userManager,
+                               SignInManager<ExtendIdentity> signInManager,
+                               RoleManager<IdentityRole> roleManager)
     {
       this.userManager = userManager;
       this.signInManager = signInManager;
+      this.roleManager = roleManager;
     }
 
     // To Get Login View
@@ -49,7 +53,7 @@ namespace EmployeeManagement.Controllers
           }
        
       }
-        ModelState.AddModelError(string.Empty, "Invalid User Login Attempt");
+        ModelState.AddModelError(string.Empty, "Invalid User Email or Password.");
       }
       return View(model);
     }
@@ -60,6 +64,38 @@ namespace EmployeeManagement.Controllers
     {
       await signInManager.SignOutAsync();
       return RedirectToAction("index", "home");
+    }
+
+    [AcceptVerbs("get","post")]
+    [AllowAnonymous]
+    public async Task<IActionResult> IsEmail(string email)
+    {
+      var Email = await userManager.FindByEmailAsync(email);
+      if(Email == null)
+      {
+        return Json(true);
+      }
+      else
+      {
+        return Json("This Email is Already Used By another person.");
+      }
+
+    }
+    
+    public async Task<IActionResult> Profile(string userName)
+    {
+      var user = await userManager.FindByNameAsync(userName);
+      ProfileViewModel profileViewModel = new ProfileViewModel
+      {
+        Name = user.Name,
+        //Role = roleManager.GetRoleNameAsync( ),
+        Email = user.Email,
+        BirthDate = user.BirthDate,
+        Gender = user.Gender,
+
+        //Password = PasswordHasher<User>
+      };
+      return View(profileViewModel);
     }
 
     // User Register
@@ -74,10 +110,14 @@ namespace EmployeeManagement.Controllers
     {
       if (ModelState.IsValid)
       {
-        var user = new IdentityUser
+        var user = new ExtendIdentity
         {
+          Name = model.Name,
+          Gender = model.Gender,
+          BirthDate = model.BirthDate,
           UserName = model.Email,
           Email = model.Email,
+
         };
         var result = await userManager.CreateAsync(user, model.Password);
         if (result.Succeeded)

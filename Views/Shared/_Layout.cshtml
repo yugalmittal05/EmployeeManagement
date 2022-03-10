@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
+@inject SignInManager<Model.ExtendIdentity> SignInManager
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,10 +10,10 @@
       if (@ViewBag.PageTitle != null)
       {@ViewBag.PageTitle}
     else @Model.PageTitle
-  }
-</title>
-<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-<link rel="stylesheet" href="~/css/site.css" />
+    }
+  </title>
+  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
   <header>
@@ -34,6 +34,23 @@
             @*If the user is signed-in display Logout link*@
             @if (SignInManager.IsSignedIn(User))
             {
+              if (@User.IsInRole("Admin"))
+              {
+                <li class="nav-item">
+                  <a style="width:auto" asp-controller="administration" asp-action="CreateRole"
+                     class="nav-link btn btn-link py-0">Create Role
+                  </a>
+                </li>
+              }
+
+              <li class="nav-item">
+                <form method="post" asp-controller="account" asp-action="profile" asp-route-userName="@User.Identity.Name">
+                  <button type="submit" style="width:auto"
+                          class="nav-link btn btn-link py-0">
+                    Profile
+                  </button>
+                </form>
+              </li>
               <li class="nav-item">
                 <form method="post" asp-controller="account" asp-action="logout">
                   <button type="submit" style="width:auto"
@@ -44,6 +61,7 @@
               </li>
             }
             else
+
             {
               <li class="nav-item">
                 <a class="nav-link" asp-controller="account" asp-action="register">

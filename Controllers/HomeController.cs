@@ -4,10 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
 namespace EmployeeManagement.Controllers
@@ -39,7 +35,7 @@ namespace EmployeeManagement.Controllers
     }
 
     // Get employee Data By id
-    [AllowAnonymous]
+
     [HttpGet("Details/{id?}")]
     public ViewResult Details(int id)
     {
@@ -77,7 +73,7 @@ namespace EmployeeManagement.Controllers
       //_employeeRepository.DeleteEmployee(id);
       ViewBag.PageTitle = "Employee Delete";
       
-      if (employee.PhotoPath != null)
+      if (string.IsNullOrEmpty(employee.PhotoPath) !=true)
       {
         string photoPath = Environment.WebRootPath + "/images/" + employee.PhotoPath;
         System.IO.File.Delete(photoPath);
@@ -86,6 +82,22 @@ namespace EmployeeManagement.Controllers
 
     }
 
+    [AcceptVerbs("get", "post")]
+    [AllowAnonymous]
+    public IActionResult IsEmail(string email)
+    {
+      //var user = _employeeRepository.GetEmployeeByEmail(email);
+      if (email != _employeeRepository.GetEmployeeByEmail(email))
+      {
+        return Json(true);
+      }
+      else
+      {
+        return Json($"This Email, {email} is Already Used By another person.");
+      }
+    }
+
+    
     // Create view
     [HttpGet("Create")]
     public ViewResult Create()
@@ -93,26 +105,27 @@ namespace EmployeeManagement.Controllers
       return View();
     }
 
-
     //create data
     [HttpPost("Create")]
     public IActionResult Create(EmployeeCreateViewModel model)
     {
-      if (ModelState.IsValid)
-      {
-        string uniqueFileName = ProcesFileUpload(model);
-        Employee newEmployee = new Employee
+        if (ModelState.IsValid)
         {
-          Name = model.Name,
-          Email = model.Email,
-          Department = model.Department,
-          PhotoPath = uniqueFileName
-        };
-        _employeeRepository.AddEmployee(newEmployee);
-        return RedirectToAction("details", new { id = newEmployee.Id });
+          string uniqueFileName = ProcesFileUpload(model);
+          Employee newEmployee = new Employee
+          {
+            Name = model.Name,
+            Email = model.Email.ToLower(),
+            Department = model.Department,
+            PhotoPath = uniqueFileName
+          };
+          _employeeRepository.AddEmployee(newEmployee);
+          return RedirectToAction("details", new { id = newEmployee.Id });
       }
       return View();
     }
+
+    
 
     //Get update View 
     [HttpGet("update/{id?}")]
@@ -123,7 +136,7 @@ namespace EmployeeManagement.Controllers
       {
         Id = employee.Id,
         Name = employee.Name,
-        Email = employee.Email,
+        NewEmail = employee.Email,
         Department = employee.Department,
         OldPhoto = employee.PhotoPath
       };
@@ -139,7 +152,7 @@ namespace EmployeeManagement.Controllers
       {
         Employee employee = _employeeRepository.GetEmployee(model.Id);
         employee.Name = model.Name;
-        employee.Email = model.Email;
+       // employee.Email = model.NewEmail;
         employee.Department = model.Department;
         if (model.Photo != null)
         {
@@ -151,12 +164,10 @@ namespace EmployeeManagement.Controllers
           employee.PhotoPath = ProcesFileUpload(model);
         }
         _employeeRepository.UpdateEmployee(employee);
-        return RedirectToAction("details", new { id = employee.Id });
+        return RedirectToAction("details");
       }
       return View();
     }
-
-
     //Get File Name And Upload in Folder
     private string ProcesFileUpload(EmployeeCreateViewModel model)
     {

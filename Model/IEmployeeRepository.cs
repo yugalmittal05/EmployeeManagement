@@ -8,6 +8,7 @@ namespace EmployeeManagement.Model
   public interface IEmployeeRepository
   {
    Employee  GetEmployee(int id);
+   string GetEmployeeByEmail(string Email);
    IEnumerable<Employee> GetAllEmployees();
 
    Employee DeleteEmployee(int id);

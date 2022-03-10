@@ -11,6 +11,27 @@
 function getResponce(id) {
     var text = "Are You Sure to Delete it?";
     if (confirm(text) == true) {
-        window.location.replace("https://localhost:44392/Home/delete/" + id)
+
+        window.location.replace("/Home/delete/" + id)
     } 
+}
+
+function getList() {
+    if (document.getElementById("listView").style.display == 'none') {
+        document.getElementById("listView").style.display = 'block';
+        document.getElementById("gridView").style.display = 'none';
+       
+     }
+}
+function getGrid() {
+    if (document.getElementById("gridView").style.display == 'none') {
+        document.getElementById("gridView").style.display = 'block';
+        document.getElementById("listView").style.display = 'none';
+    }
+}
+
+function removeImage() {
+  var element = document.getElementById("img");
+	element.parentNode.removeChild(element);
+  
 }

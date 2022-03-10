@@ -1,5 +1,6 @@
 ﻿using EmployeeManagement.Model;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,11 +14,15 @@ namespace EmployeeManagement.ViewModels
    
     [Required(ErrorMessage = "Invaild Name")]
     public string Name { get; set; }
+
     [Required(ErrorMessage = "Invaild Mail")]
-    [RegularExpression(@"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", ErrorMessage = "Invalid email format")]
+    [Remote(action: "IsEmail", controller: "Home")]
+    [EmailAddress] 
     public string Email { get; set; }
+
     [Required(ErrorMessage = "Please Select Your Department")]
     public Dept? Department { get; set; }
+    
     public IFormFile Photo { get; set; }
   }
 }

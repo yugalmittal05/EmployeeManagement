@@ -44,6 +44,15 @@ namespace EmployeeManagement.Model
       return user;
     }
 
+    public string GetEmployeeByEmail(string email)
+    {
+      Employee user =  context.Employees.Where(e => e.Email == email).FirstOrDefault();
+      if (user == null)
+      {
+        return null;
+      }
+      return user.Email;
+    }
     public Employee UpdateEmployee(Employee employeeChanges)
     {
       var employee = context.Employees.Attach(employeeChanges);
