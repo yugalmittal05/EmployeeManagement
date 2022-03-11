@@ -136,6 +136,7 @@ namespace EmployeeManagement.Controllers
       {
         Id = employee.Id,
         Name = employee.Name,
+        Email = employee.Email,
         NewEmail = employee.Email,
         Department = employee.Department,
         OldPhoto = employee.PhotoPath
