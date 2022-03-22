@@ -1,71 +1,77 @@
 ﻿@model IEnumerable<Model.Employee>
 
 <body>
-  <div class="btn-group">
-    <button id="list" onclick="getList()" class="btn btn-secondary btn-sm">List</button>
-    <button id="grid" onclick="getGrid()" class="btn btn-secondary btn-sm">Grid</button>
-  </div>
+    @*<div class="btn-group">
+        <button id="list" onclick="getList()" class="btn qwe btn-sm">List</button>
+        <button id="grid" onclick="getGrid()" class="btn qwe btn-sm active">Grid</button>
+    </div>*@
 
-
-  @{
-    <div id="gridView" class="row justify-content-center m-3" style="display:block">
-      <div class="row">
-        @foreach (var Model in Model)
-        {
-          <div class="card  col-xs-12 m-1">
-            <div class="card-header">
-              <h1>@Model.Name</h1>
-            </div>
-            @{
-              var photoPath = "~/images/" + (string.IsNullOrEmpty(@Model.PhotoPath) == true ? "noimage.png" : @Model.PhotoPath);
-            }
-            <div class="card-body text-center">
-              <img class="card-img-top" src="@photoPath" height="150px" asp-append-version="true" />
-            </div>
-            <div class="card-footer text-center">
-              <a asp-controller="home" asp-action="details" asp-route-id="@Model.Id" class="btn btn-primary m-1">View</a>
-              <a asp-controller="home" asp-action="Update" asp-route-id="@Model.Id" class="btn btn-primary m-1">Edit</a>
-              <button onclick="getResponce(@Model.Id)" class="btn btn-danger">Delete</button>
-            </div>
-          </div>
-        }
-      </div>
+    <div class="custom-control custom-switch">
+        <input type="checkbox" class="custom-control-input" id="customSwitch1" onclick="getList()" >
+        <label class="custom-control-label" for="customSwitch1"></label>
     </div>
-  }
 
 
-  @{
-    <div id="listView" class="table align-content-lg-stretch" style="display:none">
-      <table style="width: 100%">
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Image</th>
-          <th scope="col">Name</th>
-          <th scope="col">Actions</th>
-        </tr>
-        @{
-          var count = 0;
-          foreach (var Model in Model)
-          {
-            count++;
-            <tbody>
-              @{
-                var photoPath = "~/images/" + (string.IsNullOrEmpty(@Model.PhotoPath) == true ? "noimage.png" : @Model.PhotoPath);
-              }
-              <tr>
-                <td>@count</td>
-                <td><img src="@photoPath" height="50px" width="50px" asp-append-version="true" /></td>
-                <td>@Model.Name</td>
-                <td>
-                  <a asp-controller="home" asp-action="details" asp-route-id="@Model.Id" class="btn btn-primary m-1">View</a>
-                  <a asp-controller="home" asp-action="Update" asp-route-id="@Model.Id" class="btn btn-primary m-1">Edit</a>
-                  <button onclick="getResponce(@Model.Id)" class="btn btn-danger">Delete</button>
-                </td>
-              </tr>
-            </tbody>
-          }
-        }
-      </table>
-    </div>
-  }
+    @{
+        <div id="gridView" class="row justify-content-center m-3" style="display:block">
+            <div class="row">
+                @foreach (var Model in Model)
+                {
+                    <div class="card  col-xs-12 m-1">
+                        <div class="card-header">
+                            <h1>@Model.Name</h1>
+                        </div>
+                        @{
+                            var photoPath = "~/images/" + (string.IsNullOrEmpty(@Model.PhotoPath) == true ? "noimage.png" : @Model.PhotoPath);
+                        }
+                        <div class="card-body text-center">
+                            <img class="card-img-top" src="@photoPath" height="150px" asp-append-version="true" />
+                        </div>
+                        <div class="card-footer text-center">
+                            <a asp-controller="home" asp-action="details" asp-route-id="@Model.Id" class="btn btn-primary m-1">View</a>
+                            <a asp-controller="home" asp-action="Update" asp-route-id="@Model.Id" class="btn btn-primary m-1">Edit</a>
+                            <button onclick="getResponce(@Model.Id)" class="btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+
+    @{
+        <div id="listView" class="table align-content-lg-stretch" style="display:none">
+            <table style="width: 100%">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                @{
+                    var count = 0;
+                    foreach (var Model in Model)
+                    {
+                        count++;
+                        <tbody>
+                            @{
+                                var photoPath = "~/images/" + (string.IsNullOrEmpty(@Model.PhotoPath) == true ? "noimage.png" : @Model.PhotoPath);
+                            }
+                            <tr>
+                                <td>@count</td>
+                                <td><img src="@photoPath" height="50px" width="50px" asp-append-version="true" /></td>
+                                <td>@Model.Name</td>
+                                <td>
+                                    <a asp-controller="home" asp-action="details" asp-route-id="@Model.Id" class="btn btn-primary m-1">View</a>
+                                    <a asp-controller="home" asp-action="Update" asp-route-id="@Model.Id" class="btn btn-primary m-1">Edit</a>
+                                    <button onclick="getResponce(@Model.Id)" class="btn btn-danger">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    }
+                }
+            </table>
+        </div>
+    }
+
 </body>

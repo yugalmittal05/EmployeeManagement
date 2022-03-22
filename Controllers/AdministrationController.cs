@@ -199,7 +199,7 @@ namespace EmployeeManagement.Controllers
         }
         else
         {
-                    continue;
+           continue;
         }
 
         if (result.Succeeded)
@@ -214,7 +214,27 @@ namespace EmployeeManagement.Controllers
       return RedirectToAction("EditRole", new { Id = roleId });
     }
 
-    /*[HttpPost]
-    public async Task<IActionResult> DeleteUser*/
-  }
+    [HttpPost]
+    public async Task<IActionResult> DeleteRole(string id)
+        {
+            var role = await roleManager.FindByIdAsync(id);
+            if(role == null)
+            {
+                return View("404error");
+            }
+            else
+            {
+                var result = await roleManager.DeleteAsync(role);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ListRoles");
+                }
+                foreach(var error in result.Errors)
+                {
+                    ModelState.AddModelError("",error.Description);
+                }
+                return View(role);
+            }
+        }
+    }
 }

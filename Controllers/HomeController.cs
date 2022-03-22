@@ -34,8 +34,8 @@ namespace EmployeeManagement.Controllers
       return View(model);
     }
 
+    
     // Get employee Data By id
-
     [HttpGet("Details/{id?}")]
     public ViewResult Details(int id)
     {
@@ -82,18 +82,32 @@ namespace EmployeeManagement.Controllers
 
     }
 
+    [Route("removeImage/{id?}")]
+    public IActionResult RemoveImage(int id)
+    {
+      Employee employee = _employeeRepository.GetEmployee(id);
+      if (string.IsNullOrEmpty(employee.PhotoPath) != true)
+      {
+        string photoPath = "./wwwroot/images/" + employee.PhotoPath;
+        System.IO.File.Delete(photoPath);
+        employee.PhotoPath = null;
+        _employeeRepository.UpdateEmployee(employee);
+      }
+      return RedirectToAction("update");
+    }
+
     [AcceptVerbs("get", "post")]
     [AllowAnonymous]
-    public IActionResult IsEmail(string email)
+    public IActionResult IsEmail(string email, string newEmail)
     {
       //var user = _employeeRepository.GetEmployeeByEmail(email);
-      if (email != _employeeRepository.GetEmployeeByEmail(email))
+      if ((email ?? newEmail) != _employeeRepository.GetEmployeeByEmail(email ?? newEmail))
       {
         return Json(true);
       }
       else
       {
-        return Json($"This Email, {email} is Already Used By another person.");
+        return Json($"This Email, {email ?? newEmail} is Already Used By another person.");
       }
     }
 
@@ -137,7 +151,6 @@ namespace EmployeeManagement.Controllers
         Id = employee.Id,
         Name = employee.Name,
         Email = employee.Email,
-        NewEmail = employee.Email,
         Department = employee.Department,
         OldPhoto = employee.PhotoPath
       };
@@ -153,6 +166,10 @@ namespace EmployeeManagement.Controllers
       {
         Employee employee = _employeeRepository.GetEmployee(model.Id);
         employee.Name = model.Name;
+        if(model.NewEmail != null)
+        {
+          employee.Email = model.NewEmail;
+        }
        // employee.Email = model.NewEmail;
         employee.Department = model.Department;
         if (model.Photo != null)
@@ -169,6 +186,7 @@ namespace EmployeeManagement.Controllers
       }
       return View();
     }
+
     //Get File Name And Upload in Folder
     private string ProcesFileUpload(EmployeeCreateViewModel model)
     {

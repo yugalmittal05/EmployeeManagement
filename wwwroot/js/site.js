@@ -3,11 +3,7 @@
 
 // Write your JavaScript code.
 
-    function getid() {
-        var id = prompt("enter id");
-        //location.replace("https://localhost:44392/Home/index");
-       
-}
+
 function getResponce(id) {
     var text = "Are You Sure to Delete it?";
     if (confirm(text) == true) {
@@ -20,18 +16,16 @@ function getList() {
     if (document.getElementById("listView").style.display == 'none') {
         document.getElementById("listView").style.display = 'block';
         document.getElementById("gridView").style.display = 'none';
-       
-     }
-}
-function getGrid() {
-    if (document.getElementById("gridView").style.display == 'none') {
-        document.getElementById("gridView").style.display = 'block';
+    }
+    else {
         document.getElementById("listView").style.display = 'none';
+        document.getElementById("gridView").style.display = 'Block';
     }
 }
 
-function removeImage() {
-  var element = document.getElementById("img");
-	element.parentNode.removeChild(element);
-  
+function removeImage(id) {
+    var text = "Are you sure to Delete this Image?";
+    if (confirm(text) == true) {
+        window.location.replace("/Home/removeImage/" + id);
+    }
 }

@@ -31,49 +31,56 @@
             </li>
           </ul>
           <ul class="navbar-nav ml-auto">
-            @*If the user is signed-in display Logout link*@
-            @if (SignInManager.IsSignedIn(User))
-            {
-              if (@User.IsInRole("Admin"))
+              @*If the user is signed-in display Logout link*@
+              @if (SignInManager.IsSignedIn(User))
               {
-                <li class="nav-item">
-                  <a style="width:auto" asp-controller="administration" asp-action="CreateRole"
-                     class="nav-link btn btn-link py-0">Create Role
-                  </a>
-                </li>
+                  if (@User.IsInRole("Admin"))
+                  {
+                      @*<button class="navbar-toggler" type ="button">Manage</button>*@
+                      <li class="nav-item">
+                          <a style="width:auto" asp-controller="administration" asp-action="CreateRole"
+                             class="nav-link btn btn-link py-0">
+                              Role
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a style="width:auto" asp-controller="Account" asp-action="ListUsers"
+                             class="nav-link btn btn-link py-0">
+                              User
+                          </a>
+                      </li>
+                  }
+
+                  <li class="nav-item">
+                      <form method="post" asp-controller="account" asp-action="profile" asp-route-userName="@User.Identity.Name">
+                          <button  style="width:auto" class="nav-link btn btn-link py-0">
+                              Profile
+                          </button>
+                      </form>
+                  </li>
+                  <li class="nav-item">
+                      <form method="post" asp-controller="account" asp-action="logout">
+                          <button type="submit" style="width:auto"
+                                  class="nav-link btn btn-link py-0">
+                              Logout @User.Identity.Name
+                          </button>
+                      </form>
+                  </li>
               }
+              else
 
-              <li class="nav-item">
-                <form method="post" asp-controller="account" asp-action="profile" asp-route-userName="@User.Identity.Name">
-                  <button type="submit" style="width:auto"
-                          class="nav-link btn btn-link py-0">
-                    Profile
-                  </button>
-                </form>
-              </li>
-              <li class="nav-item">
-                <form method="post" asp-controller="account" asp-action="logout">
-                  <button type="submit" style="width:auto"
-                          class="nav-link btn btn-link py-0">
-                    Logout @User.Identity.Name
-                  </button>
-                </form>
-              </li>
-            }
-            else
-
-            {
-              <li class="nav-item">
-                <a class="nav-link" asp-controller="account" asp-action="register">
-                  Register
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" asp-controller="account" asp-action="login">
-                  Login
-                </a>
-              </li>
-            }
+              {
+                  <li class="nav-item">
+                      <a class="nav-link" asp-controller="account" asp-action="register">
+                          Register
+                      </a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" asp-controller="account" asp-action="login">
+                          Login
+                      </a>
+                  </li>
+              }
           </ul>
         </div>
       </div>

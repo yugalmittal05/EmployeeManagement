@@ -14,7 +14,7 @@ namespace EmployeeManagement.ViewModels
     public int Id { get; set; }
     
     public string OldPhoto { get; set; }
-    [Display(Name="Email")]
+   
     [Remote(action:"IsEmail",controller:"home")]
     [EmailAddress]
     public string NewEmail { get; set; }
